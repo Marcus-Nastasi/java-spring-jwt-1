@@ -22,6 +22,14 @@ public class User implements UserDetails {
     @Column
     private UserRole role;
 
+    public User() {}
+
+    public User(String email, String password, UserRole role) {
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if (this.role == UserRole.ADMIN) return List.of(

@@ -3,7 +3,6 @@ package com.mine.jwt.Controller.User;
 import com.mine.jwt.Models.Domain.Users.User;
 import com.mine.jwt.Repository.User.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,19 +32,6 @@ public class UserController {
     @GetMapping(value = "/users/{id}")
     public User getSingle(@PathVariable String id) {
         return userRepo.findById(id).get();
-    }
-
-    @PostMapping(value = "/users/add")
-    public void addUser(@RequestBody User user) {
-        String encoded = new BCryptPasswordEncoder().encode(user.getPassword());
-        user.setPassword(encoded);
-        userRepo.save(user);
-    }
-
-    @PostMapping(value = "/valid")
-    public boolean valid(@RequestBody User user) {
-        String userPass = userRepo.findById(user.getId()).get().getPassword();
-        return new BCryptPasswordEncoder().matches(user.getPassword(), userPass);
     }
 
     @DeleteMapping(value = "/users/delete/{id}")
