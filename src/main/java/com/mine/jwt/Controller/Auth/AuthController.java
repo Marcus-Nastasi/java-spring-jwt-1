@@ -39,7 +39,7 @@ public class AuthController {
     public ResponseEntity<RegisterDTO> register(@RequestBody RegisterDTO registerDTO) throws RuntimeException {
         if (userRepo.findByEmail(registerDTO.email()) != null) throw new RuntimeException("E-mail already exists");
 
-        String encoded = passwordEncoder.encode(registerDTO.password());
+        String encoded = this.passwordEncoder.encode(registerDTO.password());
         User newUser = new User(registerDTO.email(), encoded, UserRole.valueOf(registerDTO.role()));
 
         userRepo.save(newUser);
