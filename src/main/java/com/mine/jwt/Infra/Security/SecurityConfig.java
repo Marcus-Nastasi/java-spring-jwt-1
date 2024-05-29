@@ -19,17 +19,19 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.csrf(AbstractHttpConfigurer::disable)
+        return (http.csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> {
                 auth
+                    .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/users").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/adm").hasRole("ADMIN")
                     .requestMatchers(HttpMethod.POST, "/api/users/add").hasRole("ADMIN")
                     .requestMatchers(HttpMethod.DELETE, "/api/users/delete/{id}").hasRole("ADMIN")
                     .anyRequest().permitAll();
             })
-            .build();
+            .build()
+        );
     }
 
     @Bean
