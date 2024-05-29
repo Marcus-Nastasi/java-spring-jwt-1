@@ -6,15 +6,19 @@ import com.mine.jwt.Models.Domain.Users.User;
 import com.mine.jwt.Models.Domain.Users.UserRole;
 import com.mine.jwt.Repository.User.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping(value = "/auth")
@@ -44,13 +48,19 @@ public class AuthController {
 
         userRepo.save(newUser);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping(value = "/valid")
-    public boolean valid(@RequestBody User user) {
+    public boolean valid(@RequestBody User user) throws RuntimeException {
+        if (userRepo.findById(user.getId()).isEmpty()) throw new RuntimeException("user not found");
+
         String userPass = userRepo.findById(user.getId()).get().getPassword();
-        return new BCryptPasswordEncoder().matches(user.getPassword(), userPass);
+        boolean isRight = passwordEncoder.matches(user.getPassword(), userPass);
+
+        if (!isRight) throw new RuntimeException("password wrong");
+
+        return true;
     }
 }
 
