@@ -3,6 +3,8 @@ package com.mine.jwt.Controller.User;
 import com.mine.jwt.Models.Domain.Users.User;
 import com.mine.jwt.Repository.User.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,6 +36,11 @@ public class UserController {
     public ResponseEntity<User> getSingle(@PathVariable String id) throws RuntimeException {
         if (userRepo.findById(id).isEmpty()) throw new RuntimeException("user not found");
         return ResponseEntity.ok(userRepo.findById(id).get());
+    }
+
+    @GetMapping(value = "/users/logged")
+    public ResponseEntity<Boolean> isUserLogged() {
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(true);
     }
 
     @DeleteMapping(value = "/users/delete/{id}")

@@ -66,7 +66,7 @@ public class AuthController {
 
         userRepo.save(updatedUser);
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
     @PostMapping(value = "/valid")
