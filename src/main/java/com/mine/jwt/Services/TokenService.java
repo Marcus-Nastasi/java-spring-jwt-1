@@ -6,6 +6,7 @@ import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.mine.jwt.Models.Domain.Users.User;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -17,14 +18,14 @@ public class TokenService {
 
     @Value("${api.security.token.secret}")
     private String secret;
-    private final Algorithm algorithm = Algorithm.HMAC256(this.secret);
 
+    @Bean
     public String generate(User user) {
         try {
+            Algorithm algorithm = Algorithm.HMAC256(this.secret);
 
             return(
-                JWT.create()
-                .withIssuer("auth-api")
+                JWT.create().withIssuer("auth-api")
                 .withSubject(user.getEmail()).withExpiresAt(genExpDate())
                 .sign(algorithm)
             );
@@ -33,15 +34,13 @@ public class TokenService {
         }
     }
 
+    @Bean
     public String validate(String token) {
         try {
-            return(JWT
-                .require(this.algorithm)
-                .withIssuer("auth-api")
-                .build()
-                .verify(token)
-                .getSubject()
-            );
+            Algorithm algorithm = Algorithm.HMAC256(this.secret);
+
+            return JWT.require(algorithm).withIssuer("auth-api").build().verify(token).getSubject();
+
         } catch (JWTVerificationException e) {
             throw new RuntimeException(e.getMessage());
         }

@@ -5,6 +5,7 @@ import com.mine.jwt.Models.Domain.Users.RegisterDTO;
 import com.mine.jwt.Models.Domain.Users.User;
 import com.mine.jwt.Models.Domain.Users.UserRole;
 import com.mine.jwt.Repository.User.UserRepo;
+import com.mine.jwt.Services.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,13 +31,17 @@ public class AuthController {
     private UserRepo userRepo;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private TokenService tokenService;
 
     @PostMapping(value = "/login")
-    public ResponseEntity<AuthDTO> login(@RequestBody AuthDTO data) {
+    public ResponseEntity<String> login(@RequestBody AuthDTO data) {
         var usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.password());
         var auth = this.authenticationManager.authenticate(usernamePassword);
 
-        return ResponseEntity.ok().build();
+        var token = tokenService.generate((User) auth.getPrincipal());
+
+        return ResponseEntity.ok().body(token);
     }
 
     @PostMapping(value = "/register")
