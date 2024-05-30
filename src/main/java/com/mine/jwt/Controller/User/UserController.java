@@ -15,7 +15,7 @@ public class UserController {
     @Autowired
     private UserRepo userRepo;
 
-    @GetMapping(value = "/")
+    @GetMapping(value = "")
     public String home() {
         return "You did reach home";
     }

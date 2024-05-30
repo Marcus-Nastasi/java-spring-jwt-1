@@ -11,13 +11,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.ServletRequestDataBinder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
@@ -52,6 +50,21 @@ public class AuthController {
         User newUser = new User(registerDTO.email(), encoded, UserRole.valueOf(registerDTO.role()));
 
         userRepo.save(newUser);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PutMapping(value = "/update/{id}")
+    public ResponseEntity<RegisterDTO> update(@RequestBody RegisterDTO registerDTO) throws RuntimeException {
+        if (userRepo.findByEmail(registerDTO.email()) == null) throw new RuntimeException("user do not exists.");
+
+        User updatedUser = userRepo.findByMail(registerDTO.email());
+        String encoded = this.passwordEncoder.encode(registerDTO.password());
+        updatedUser.setEmail(registerDTO.email());
+        updatedUser.setPassword(encoded);
+        updatedUser.setRole(UserRole.valueOf(registerDTO.role()));
+
+        userRepo.save(updatedUser);
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
