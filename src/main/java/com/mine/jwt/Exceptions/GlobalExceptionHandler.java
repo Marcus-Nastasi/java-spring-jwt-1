@@ -14,7 +14,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<String> handleUnexpectedException(Throwable throwable) {
         String errorMessage = "{\"error\": " + "\"" + throwable.getMessage() + "\"" + '}';
-        logger.error(errorMessage, throwable);
+        //logger.error(errorMessage, throwable);
         return ResponseEntity.badRequest().body(errorMessage);
     }
 }
